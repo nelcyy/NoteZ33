@@ -4,8 +4,13 @@ import static androidx.constraintlayout.motion.widget.Debug.getLocation;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -142,19 +147,40 @@ public class note_display extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
 
             if (photo != null) {
-                // Set the captured image in the ImageView
-                cameraImageView.setImageBitmap(photo);
+                // Create a drawable from the captured Bitmap
+                Drawable drawable = new BitmapDrawable(getResources(), photo);
 
-                // Append image information without deleting the current note
-                String existingText = noteEditText.getText().toString(); // Get current text
-                noteEditText.setText("Image captured.\n" + existingText); // Add image info above existing text
+                // Set the bounds for the drawable (resize as necessary)
+                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+
+                // Create an ImageSpan
+                ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
+
+                // Get the existing text in the EditText
+                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+
+                // Insert the image at the start of the text
+                spannableStringBuilder.append(" "); // This space will hold the image
+                spannableStringBuilder.setSpan(imageSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                // Add a newline to ensure the text starts below the image
+                spannableStringBuilder.append("\n\n");
+
+                // Append the existing text below the image
+                String existingText = noteEditText.getText().toString();
+                spannableStringBuilder.append(existingText);
+
+                // Set the updated text with the image at the top in the EditText
+                noteEditText.setText(spannableStringBuilder);
             }
         }
     }
+
+
 
     private void getLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
