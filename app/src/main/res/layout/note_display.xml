@@ -147,17 +147,21 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <!-- ImageView for the captured image -->
+
     <ImageView
         android:id="@+id/capturedImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:layout_width="0dp"
+        android:layout_height="106dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
         android:contentDescription="Captured Image"
         android:scaleType="centerCrop"
-        android:adjustViewBounds="true"
-        android:layout_marginBottom="16dp"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="290dp" />
 
     <EditText
         android:id="@+id/textView5"
