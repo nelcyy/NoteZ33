@@ -161,26 +161,22 @@ public class note_display extends AppCompatActivity {
                 ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
 
                 // Get the existing text in the EditText
-                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(noteEditText.getText());
 
                 // Insert the image at the start of the text
-                spannableStringBuilder.append(" "); // This space will hold the image
+                spannableStringBuilder.insert(0, " "); // This space will hold the image
                 spannableStringBuilder.setSpan(imageSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                // Add a newline to ensure the text starts below the image
-                spannableStringBuilder.append("\n\n");
+                // Check if there are already double newlines after the image
+                if (!spannableStringBuilder.toString().startsWith("\n\n", 1)) {
+                    spannableStringBuilder.insert(1, "\n\n"); // Add newlines only if they don't exist
+                }
 
-                // Append the existing text below the image
-                String existingText = noteEditText.getText().toString();
-                spannableStringBuilder.append(existingText);
-
-                // Set the updated text with the image at the top in the EditText
+                // Set the updated text with the image in the EditText
                 noteEditText.setText(spannableStringBuilder);
             }
         }
     }
-
-
 
     private void getLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -226,13 +222,53 @@ public class note_display extends AppCompatActivity {
                 String state = address.getAdminArea();
                 String road = address.getThoroughfare();
 
-                String existingText = noteEditText.getText().toString();
-                noteEditText.setText("Address: " + addressLine + "\n" +
+                // Create the location text
+                String locationText = "Address: " + addressLine + "\n" +
                         "Country: " + country + "\n" +
                         "City: " + city + "\n" +
                         "State: " + state + "\n" +
-                        "Road: " + road + "\n" + "\n" + existingText);
+                        "Road: " + road + "\n\n";
+
+                // Get the existing text as Spannable (preserving images)
+                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(noteEditText.getText());
+
+                // Find and remove the old location (if it exists)
+                String oldLocationMarker = "Address:";
+                int startIndex = spannableStringBuilder.toString().indexOf(oldLocationMarker);
+                if (startIndex != -1) {
+                    int endIndex = spannableStringBuilder.toString().indexOf("\n\n", startIndex);
+                    if (endIndex != -1) {
+                        spannableStringBuilder.delete(startIndex, endIndex + 2); // +2 to remove double newlines
+                    } else {
+                        spannableStringBuilder.delete(startIndex, spannableStringBuilder.length());
+                    }
+                }
+
+                // Find the position of the ImageSpan
+                ImageSpan[] imageSpans = spannableStringBuilder.getSpans(0, spannableStringBuilder.length(), ImageSpan.class);
+
+                if (imageSpans.length > 0) {
+                    // Get the end position of the first image span
+                    int imageEndPosition = spannableStringBuilder.getSpanEnd(imageSpans[0]);
+
+                    // Check if there are already double newlines after the image
+                    String textAfterImage = spannableStringBuilder.subSequence(imageEndPosition, spannableStringBuilder.length()).toString();
+                    if (!textAfterImage.startsWith("\n\n")) {
+                        // If there aren't double newlines after the image, add them
+                        spannableStringBuilder.insert(imageEndPosition, "\n\n");
+                    }
+
+                    // Insert the new location text right after the image span
+                    spannableStringBuilder.insert(imageEndPosition + 2, locationText); // +2 to account for the newlines
+                } else {
+                    // If no image span is found, insert location at the very start of the notes
+                    spannableStringBuilder.insert(0, locationText);
+                }
+
+                // Set the updated text with the image (if any) and new location
+                noteEditText.setText(spannableStringBuilder);
             } else {
+                // If no address is found, append coordinates
                 noteEditText.append("\nLocation: " + latitude + ", " + longitude + " (Address not found)");
             }
         } catch (IOException e) {
