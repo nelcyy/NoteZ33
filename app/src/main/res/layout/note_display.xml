@@ -8,10 +8,10 @@
 
     <EditText
         android:id="@+id/editTextTextPostalAddress2"
-        android:layout_width="405dp"
-        android:layout_height="89dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="9dp"
+        android:layout_width="383dp"
+        android:layout_height="83dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="12dp"
         android:ems="10"
         android:inputType="textPostalAddress"
         android:text="Title"
@@ -38,7 +38,7 @@
         android:id="@+id/imageView2"
         android:layout_width="33dp"
         android:layout_height="41dp"
-        android:layout_marginStart="320dp"
+        android:layout_marginStart="300dp"
         android:layout_marginTop="44dp"
         android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toTopOf="@+id/editTextTextPostalAddress2"
@@ -50,8 +50,8 @@
         android:id="@+id/imageView5"
         android:layout_width="98dp"
         android:layout_height="59dp"
-        android:layout_marginStart="23dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/baseline_camera_alt_24" />
@@ -61,7 +61,7 @@
         android:layout_width="57dp"
         android:layout_height="81dp"
         android:layout_marginEnd="128dp"
-        android:layout_marginBottom="9dp"
+        android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView4"
         app:layout_constraintEnd_toStartOf="@+id/imageView10"
         app:layout_constraintHorizontal_bias="1.0"
@@ -134,8 +134,8 @@
 
     <EditText
         android:id="@+id/editTextTextPostalAddress"
-        android:layout_width="409dp"
-        android:layout_height="90dp"
+        android:layout_width="387dp"
+        android:layout_height="82dp"
         android:layout_marginStart="5dp"
         android:layout_marginBottom="38dp"
         android:ems="10"
@@ -161,18 +161,18 @@
 
     <EditText
         android:id="@+id/textView5"
-        android:layout_width="398dp"
-        android:layout_height="430dp"
+        android:layout_width="373dp"
+        android:layout_height="431dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="13dp"
-        android:layout_marginBottom="42dp"
+        android:layout_marginBottom="4dp"
         android:background="@null"
         android:gravity="top|start"
         android:text="Note here : Lily Nelcy Fidel...."
         android:textSize="17dp"
         app:layout_constraintBottom_toTopOf="@+id/imageView10"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
