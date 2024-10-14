@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -47,7 +48,7 @@ public class note_display extends AppCompatActivity {
     private EditText noteEditText;
 
     private FusedLocationProviderClient fusedLocationClient;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 101;
     private ImageView locationImageView;
 
     @Override
@@ -171,43 +172,46 @@ public class note_display extends AppCompatActivity {
 
     // Fetch location details and update the note with address information
     private void fetchLocation() {
-        fusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if (task.isSuccessful() && task.getResult() != null) {
-                    Location location = task.getResult();
-                    double latitude = location.getLatitude();
-                    double longitude = location.getLongitude();
-
-                    Geocoder geocoder = new Geocoder(note_display.this, Locale.getDefault());
-                    try {
-                        List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-                        if (addresses != null && !addresses.isEmpty()) {
-                            Address address = addresses.get(0);
-                            String addressLine = address.getAddressLine(0);
-                            String country = address.getCountryName();
-                            String city = address.getLocality();
-                            String state = address.getAdminArea();
-                            String road = address.getThoroughfare();
-
-                            // Append detailed address information without deleting the current note
-                            String existingText = noteEditText.getText().toString(); // Get current text
-                            noteEditText.setText("Address: " + addressLine + "\n" +
-                                    "Country: " + country + "\n" +
-                                    "City: " + city + "\n" +
-                                    "State: " + state + "\n" +
-                                    "Road: " + road + "\n" + "\n" + existingText); // Append detailed location info
+        fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
+                .addOnCompleteListener(new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            Location location = task.getResult();
+                            double latitude = location.getLatitude();
+                            double longitude = location.getLongitude();
+                            updateLocationInNoteField(latitude, longitude);
                         } else {
-                            noteEditText.append("\nLocation: " + latitude + ", " + longitude + " (Address not found)");
+                            Toast.makeText(note_display.this, "Unable to fetch location", Toast.LENGTH_SHORT).show();
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(note_display.this, "Error fetching address", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(note_display.this, "Unable to fetch location", Toast.LENGTH_SHORT).show();
-                }
+                });
+    }
+
+    private void updateLocationInNoteField(double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(note_display.this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                String addressLine = address.getAddressLine(0);
+                String country = address.getCountryName();
+                String city = address.getLocality();
+                String state = address.getAdminArea();
+                String road = address.getThoroughfare();
+
+                String existingText = noteEditText.getText().toString();
+                noteEditText.setText("Address: " + addressLine + "\n" +
+                        "Country: " + country + "\n" +
+                        "City: " + city + "\n" +
+                        "State: " + state + "\n" +
+                        "Road: " + road + "\n" + "\n" + existingText);
+            } else {
+                noteEditText.append("\nLocation: " + latitude + ", " + longitude + " (Address not found)");
             }
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(note_display.this, "Error fetching address", Toast.LENGTH_SHORT).show();
+        }
     }
 }
